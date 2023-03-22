@@ -1,0 +1,82 @@
+---
+title: "Relatório de Atendimento Médico Individual"
+author: "Robson Wilson Silva Pessoa"
+format: html
+editor: visual
+---
+
+## Atividades 
+
+
+## Running Code
+
+
+```{r}
+library(readxl)
+library(dplyr)
+library(magrittr)
+library(tidyr)
+library(lubridate)
+# Fonte: 
+# Data: 
+# Time: 
+
+# Leitura especificada - preservacao dados original
+df <- read_excel("data/RelatorioSaudeProducao.xls",      
+                 range = "A12:M39")
+
+df %<>% arrange(Estado)
+
+# Remocao de pontos de milhar dos caracters 
+df %<>% mutate(across(where(is.character), ~ gsub('.','',.x,fixed = TRUE)))
+
+# Conversao de character em numeric
+df %<>% mutate(across(`DEZ/2022`:`JAN/2022`, ~ as.numeric(.x)))
+
+# Siglas dos estados brasileiros 
+SIGLAS <- c("AC","AL","AP","AM",
+            "BA","CE","DF","ES",
+            "GO","MA","MT","MS",
+            "MG","PA","PB","PR",
+            "PE","PI","RJ","RN",
+            "RS","RO","RR","SC",
+            "SP","SE","TO")
+            
+df <- data.frame(SIGLAS,df)
+
+# gather
+df %<>% gather(key='mes',value = 'atendimentos',-c(Estado,SIGLAS)) 
+
+
+```
+
+
+```{r, echo=FALSE}
+library(geobr)
+library(ggplot2)
+library(sf)
+
+
+# read all states
+states <- read_state(
+  year=2020, 
+  showProgress = FALSE
+  )
+
+# totalizacao por estado 
+df %>% group_by(SIGLAS) %>% 
+  summarise(total = sum(atendimentos)) 
+
+
+
+ggplot() +
+  geom_sf(data=states, aes(fill=blues9), color= NA, size=.15) +
+    labs(subtitle="Life Expectancy at birth, Brazilian States, 2014", size=8) +
+    scale_fill_distiller(palette = "Blues", name="Life Expectancy", limits = c(65,80)) +
+    theme_minimal() +
+    no_axis
+
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
