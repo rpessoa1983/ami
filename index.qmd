@@ -11,7 +11,7 @@ editor: visual
 ## Running Code
 
 
-```{r}
+```{r, echo=FALSE}
 library(readxl)
 library(dplyr)
 library(magrittr)
@@ -65,7 +65,9 @@ states <- read_state(
 
 # totalizacao por estado 
 dfs <- df %>% group_by(ABREV) %>% 
-  summarise(total = sum(atendimentos)) 
+  summarise(total = sum(atendimentos)/1e6) # correcao de escala
+
+ 
 
 states$abbrev_state <- tolower(states$abbrev_state)
 dfs$ABREV <- tolower(dfs$ABREV)
@@ -82,7 +84,8 @@ ggplot() +
   geom_sf(data=states, aes(fill=total/1000000), color= NA, size=.15) +
     labs(subtitle="Atendimento Individual por Médico, 2022", size=8) +
     scale_fill_distiller(palette = "Blues", name="Milhões/ano", limits = c(0,50)) +
-  scale_fill_distiller(direction = -1)
+  scale_fill_distiller(direction = 1)+
     theme_minimal() +
     no_axis
+    
 ```
