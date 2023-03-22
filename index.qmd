@@ -34,7 +34,7 @@ df %<>% mutate(across(where(is.character), ~ gsub('.','',.x,fixed = TRUE)))
 df %<>% mutate(across(`DEZ/2022`:`JAN/2022`, ~ as.numeric(.x)))
 
 # Siglas dos estados brasileiros 
-SIGLAS <- c("AC","AL","AP","AM",
+ABREV <- c("AC","AL","AP","AM",
             "BA","CE","DF","ES",
             "GO","MA","MT","MS",
             "MG","PA","PB","PR",
@@ -42,10 +42,10 @@ SIGLAS <- c("AC","AL","AP","AM",
             "RS","RO","RR","SC",
             "SP","SE","TO")
             
-df <- data.frame(SIGLAS,df)
+df <- data.frame(ABREV,df)
 
 # gather
-df %<>% gather(key='mes',value = 'atendimentos',-c(Estado,SIGLAS)) 
+df %<>% gather(key='mes',value = 'atendimentos',-c(Estado,ABREV)) 
 
 
 ```
@@ -64,19 +64,25 @@ states <- read_state(
   )
 
 # totalizacao por estado 
-df %>% group_by(SIGLAS) %>% 
+dfs <- df %>% group_by(ABREV) %>% 
   summarise(total = sum(atendimentos)) 
 
+states$abbrev_state <- tolower(states$abbrev_state)
+dfs$ABREV <- tolower(dfs$ABREV)
 
+# join the databases
+states <- dplyr::left_join(states, dfs, by = c("abbrev_state" = "ABREV"))
+
+# Remove plot axis
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank())
 
 ggplot() +
-  geom_sf(data=states, aes(fill=blues9), color= NA, size=.15) +
-    labs(subtitle="Life Expectancy at birth, Brazilian States, 2014", size=8) +
-    scale_fill_distiller(palette = "Blues", name="Life Expectancy", limits = c(65,80)) +
+  geom_sf(data=states, aes(fill=total/1000000), color= NA, size=.15) +
+    labs(subtitle="Atendimento Individual por Médico, 2022", size=8) +
+    scale_fill_distiller(palette = "Blues", name="Milhões/ano", limits = c(0,50)) +
+  scale_fill_distiller(direction = -1)
     theme_minimal() +
     no_axis
-
-
 ```
-
-The `echo: false` option disables the printing of code (only output is displayed).
