@@ -11,7 +11,7 @@ editor: visual
 ## Running Code
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 library(readxl)
 library(dplyr)
 library(magrittr)
@@ -25,13 +25,22 @@ library(lubridate)
 df <- read_excel("data/RelatorioSaudeProducao.xls",      
                  range = "A12:M39")
 
+df2023 <- read_excel("data/RelatorioSaudeProducao2023.xls",      
+                 range = "A14:C41")
+
+
+
 df %<>% arrange(Estado)
+df2023 %<>% arrange(Estado)
+
 
 # Remocao de pontos de milhar dos caracters 
 df %<>% mutate(across(where(is.character), ~ gsub('.','',.x,fixed = TRUE)))
+df2023 %<>% mutate(across(where(is.character), ~ gsub('.','',.x,fixed = TRUE)))
 
 # Conversao de character em numeric
 df %<>% mutate(across(`DEZ/2022`:`JAN/2022`, ~ as.numeric(.x)))
+df2023 %<>% mutate(across(`FEV/2023`:`JAN/2023`, ~ as.numeric(.x)))
 
 # Siglas dos estados brasileiros 
 ABREV <- c("AC","AL","AP","AM",
@@ -41,17 +50,31 @@ ABREV <- c("AC","AL","AP","AM",
             "PE","PI","RJ","RN",
             "RS","RO","RR","SC",
             "SP","SE","TO")
-            
-df <- data.frame(ABREV,df)
+
+# Lista de Estados em ordem alfabetica
+Estado <- levels(as.factor(df$Estado))
+
+
+dfref <- as_tibble(data.frame(Estado,ABREV))
+
+
+
+
+# unindo dois arquivos coletados separadamente
+df <- inner_join(df2023,df,"Estado"="Estado")
+
+df <- inner_join(df,dfref,"Estado"="Estado")
+
 
 # gather
 df %<>% gather(key='mes',value = 'atendimentos',-c(Estado,ABREV)) 
 
 
+
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 library(geobr)
 library(ggplot2)
 library(sf)
@@ -64,8 +87,10 @@ states <- read_state(
   )
 
 # totalizacao por estado 
-dfs <- df %>% group_by(ABREV) %>% 
-  summarise(total = sum(atendimentos)/1e6) # correcao de escala
+dfs <- df %>% 
+          filter(mes %in% c("JAN/2023")) %>% 
+          group_by(ABREV) %>% 
+          summarise(total = atendimentos) # correcao de escala
 
  
 
@@ -81,11 +106,13 @@ no_axis <- theme(axis.title=element_blank(),
                  axis.ticks=element_blank())
 
 ggplot() +
-  geom_sf(data=states, aes(fill=total/1000000), color= NA, size=.15) +
-    labs(subtitle="Atendimento Individual por Médico, 2022", size=8) +
-    scale_fill_distiller(palette = "Blues", name="Milhões/ano", limits = c(0,50)) +
+  geom_sf(data=states, aes(fill=total), color= NA, size=.15) +
+    labs(subtitle="Atendimento Individual realizado por Médico, 2022", size=8) +
+    scale_fill_distiller(palette = "Blues", name=" ", limits = c(0,50)) +
+  guides(fill=guide_legend(title="Milhões de atendimentos"))+
   scale_fill_distiller(direction = 1)+
     theme_minimal() +
-    no_axis
+    no_axis+
+  labs(caption = "Fonte: Sistemas de Informação em Saúde para a Atenção Básica (SISAB)")
     
 ```
