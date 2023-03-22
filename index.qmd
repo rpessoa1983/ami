@@ -221,8 +221,9 @@ aquele com o maior custo, mas que também deve ser investigado com mais detalhes
 
 
 
-```{r}
+```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 
+library(bbplot)
 
 statesr <- states %>% mutate(razao = total/Valor)
 
@@ -233,22 +234,25 @@ ggplot(aes(x=Ano,y = razao))+
   xlab("")+
   ylab("%")+
   labs(caption = "Fonte: Autoria própria")+
-  ggtitle("Razão entre atendimentos individuias e população residente dos estados.")+
-  theme(axis.text.x=element_text(size=16, angle=0, vjust=.8, hjust=0.8)) +
+  ggtitle(" ")+
+  theme(axis.text.x=element_text(size=14, angle=0, vjust=.8, hjust=0.8)) +
   theme(axis.title.y = element_text(color = "black",size = 16))+
   theme(axis.title.x = element_text(color = "black",size = 16))+
-  theme(axis.text.y=element_text(size=16)) +
-  theme(axis.text = element_text(size = 16))  +
-  theme(legend.text = element_text(size = 14)) +
-  theme(legend.title = element_text(size = 16)) +
+  theme(axis.text.y=element_text(size=14)) +
+  theme(axis.text = element_text(size = 14))  +
+  theme(legend.text = element_text(size = 8)) +
+  theme(legend.title = element_text(size = 8)) +
 #  scale_color_discrete("")+
 #  scale_size_continuous(name="Frequência (%)")+
 #  scale_color_manual(name="Conceito",values=c("#303600","#a5c500" ,"#d4c78c","#5ec6f2","003468"),
 #                     labels = c("Ótimo","Muito Bom","Bom","Regular","Insatisfatório"))+
-  ylim(0, 0.15)
+  ylim(0, 0.15)+
+  bbc_style()
 
 ```
 
 
 
+Finalmente, verificamos que a razão entre o atendimento por médicos e a população residente revela assimitrias regionais, sendo a região  Sul
+mais bem atendida, enquanto a região Norte, com a maioria dos estados na condição oposta. 
 
