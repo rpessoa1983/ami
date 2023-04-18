@@ -5,42 +5,36 @@ format: html
 editor: visual
 ---
 
+O Sistema de Informação em Saúde para a Atenção Básica (SISAB) completará 10 anos, ele foi instituído pela Portaria GM/MS nº 1.412, de 10 de julho de 2013. O [SISAB](https://sisab.saude.gov.br/) tem entre suas funções os seguintes objetivos principais:
 
-O Sistema de Informação em Saúde para a Atenção Básica (SISAB) completará 
-10 anos neste anos, ele foi instituído pela Portaria GM/MS nº 1.412, de 10 de julho de 2013. O [SISAB](https://sisab.saude.gov.br/) tem entre suas funções os seguintes objetivos principais:
+-   incremento da gestão da informação;
+-   automação dos processos;
+-   melhoria das condições de infraestrutura e
+-   melhoria dos processos de trabalho.
 
-- incremento da gestão da informação;
-- automação dos processos;
-- melhoria das condições de infraestrutura e 
-- melhoria dos processos de trabalho.
-
-Na próxima seção conheceremos alguns dados deste sistema. 
+Na próxima seção conheceremos alguns dados deste sistema.
 
 ## Produção: Atendimento Individual
 
- Neste página, temos a intenção de demonstrar o número de 
-atendimentos individuais realizados por médicos na competência de janeiro de 
-2023. Estes dados foram coletados na aba [Saúde/Produção](https://sisab.saude.gov.br/paginas/acessoRestrito/relatorio/federal/saude/RelSauProducao.xhtml)  do SISAB, considerando as seguintes
-seleções e filtros:
+Neste página, temos a intenção de demonstrar o número de atendimentos individuais realizados por médicos na competência de janeiro de 2023. Estes dados foram coletados na aba [Saúde/Produção](https://sisab.saude.gov.br/paginas/acessoRestrito/relatorio/federal/saude/RelSauProducao.xhtml) do SISAB, considerando as seguintes seleções e filtros:
 
-**Seleções**  
+**Seleções**
 
-  a. *Unidade Geográfica:* Estado
-  b. *Competência:* JAN/2023  
-  c. *Linha do Relatório:* Estado
-  d. *Coluna do Relatório:* Competência
-  
-**Filtros** 
+a.  *Unidade Geográfica:* Estado
+b.  *Competência:* JAN/2023\
+c.  *Linha do Relatório:* Estado
+d.  *Coluna do Relatório:* Competência
 
-Exceto pela *Categoria Profissional:* Médico, o restante foi 
-selecionado para todas as opções. 
+**Filtros**
+
+Exceto pela *Categoria Profissional:* Médico, o restante foi selecionado para todas as opções.
 
 **Tipo de Produção**
 
 *Tipo de Produção:* Atendimento Individual.
 
+A partir destes dados coletados
 
-A partir destes dados coletados 
 ```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 library(readxl)
 library(dplyr)
@@ -91,9 +85,9 @@ dfref <- as_tibble(data.frame(Estado,ABREV))
 
 
 # unindo dois arquivos coletados separadamente
-df <- inner_join(df2023,df,"Estado"="Estado")
+df <- inner_join(df2023,df)
 
-df <- inner_join(df,dfref,"Estado"="Estado")
+df <- inner_join(df,dfref)
 
 
 # gather
@@ -102,7 +96,6 @@ df %<>% gather(key='mes',value = 'atendimentos',-c(Estado,ABREV))
 
 
 ```
-
 
 ```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 library(geobr)
@@ -146,17 +139,15 @@ ggplot() +
     
 ```
 
+A partir desses números, reconhecemos rapidamente que a região Sul e Sudeste do país tem um número significativamente superior em relação às outras regiões do país, de atendimentos na competência janeiro de 2023. Pelo mapa acima, que indica o número de atendimentos individuais realizados por médico, verificamos que cinco estados se destacam em ordem descrescente de atendimentos:
 
-A partir desses números, reconhecemos rapidamente que a região Sul e Sudeste do país tem um número significativamente superior em relação às outras regiões do país, de atendimentos na competência janeiro de 2023. Pelo mapa acima, que indica o número de atendimentos individuais realizados por médico,  verificamos que cinco estados se destacam em ordem descrescente de atendimentos: 
+-   São Paulo;
+-   Minas Gerais;
+-   Rio Grande do Sul;
+-   Paraná e
+-   Rio de Janeiro.
 
-- São Paulo;
-- Minas Gerais;
-- Rio Grande do Sul; 
-- Paraná e 
-- Rio de Janeiro. 
-
-Exceto pelo Rio de Janeiro, com aproximadamente $987~mil$ atendimentos, o restante apresenta uma quantidade de atendimentos superior  a $1~milhão$. Podemos 
-investigar estes dados à luz da população estadual. 
+Exceto pelo Rio de Janeiro, com aproximadamente $987~mil$ atendimentos, o restante apresenta uma quantidade de atendimentos superior a $1~milhão$. Podemos investigar estes dados à luz da população estadual.
 
 ```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 library(sidrar)
@@ -182,12 +173,7 @@ ggplot() +
 
 ```
 
-Apesar da Bahia ser o quarto estado em termos de população residente, 
-é apenas o oitavo estado em número de atendimentos. Esta análise 
-deve ser aprofundada. Para observar de forma mais objetiva estes 
-números, avaliaremos a razão entre o número de atendimentos individuais
-realizados por médicos e o número de residentes de cada estado. 
-
+Apesar da Bahia ser o quarto estado em termos de população residente, é apenas o oitavo estado em número de atendimentos. Esta análise deve ser aprofundada. Para observar de forma mais objetiva estes números, avaliaremos a razão entre o número de atendimentos individuais realizados por médicos e o número de residentes de cada estado.
 
 ```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 
@@ -204,22 +190,15 @@ ggplot() +
 
 ```
 
-Ao analisar o mapa acima que representa a razão entre o número de atendimentos e a população residente, os cinco estados que mais se destacam são: 
+Ao analisar o mapa acima que representa a razão entre o número de atendimentos e a população residente, os cinco estados que mais se destacam são:
 
-- Santa Catarina;
-- Tocantins; 
-- Rio Grande do Sul;
-- Paraná e 
-- Mato Grosso.
+-   Santa Catarina;
+-   Tocantins;
+-   Rio Grande do Sul;
+-   Paraná e
+-   Mato Grosso.
 
-Apenas observando este indicador pode sugerir que este tipo de atendimento pode mostrar-se mais equilibrado para estes cinco estados. Deve ser olhar 
-com parcimônia essas informações, a julgar pelas inequadades encontradas 
-nos sistemas de saúde de cada um destes estados e também a qualidade de 
-vida das suas respectivas populações. Em termos de custos a União, 
-certamente o estado com o maior quantidade de atendimentos também será 
-aquele com o maior custo, mas que também deve ser investigado com mais detalhes. 
-
-
+Apenas observando este indicador pode sugerir que este tipo de atendimento pode mostrar-se mais equilibrado para estes cinco estados. Deve-se olhar com parcimônia essas informações, a julgar pelas inequadades encontradas nos sistemas de saúde de cada um destes estados e também a qualidade de vida das suas respectivas populações. Em termos de custos a União, certamente o estado com o maior quantidade de atendimentos também será aquele com o maior custo, mas que também deve ser investigado com mais detalhes.
 
 ```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 
@@ -232,7 +211,7 @@ ggplot(aes(x=Ano,y = razao))+
   geom_boxplot(width=0.2,alpha=0.02) +
   geom_jitter(aes(colour=name_region,shape=name_region,size=2),width=0.1)+
   xlab("")+
-  ylab("%")+
+  ylab("")+
   labs(caption = "Fonte: Autoria própria")+
   ggtitle(" ")+
   theme(axis.text.x=element_text(size=14, angle=0, vjust=.8, hjust=0.8)) +
@@ -242,17 +221,14 @@ ggplot(aes(x=Ano,y = razao))+
   theme(axis.text = element_text(size = 14))  +
   theme(legend.text = element_text(size = 8)) +
   theme(legend.title = element_text(size = 8)) +
-#  scale_color_discrete("")+
-#  scale_size_continuous(name="Frequência (%)")+
-#  scale_color_manual(name="Conceito",values=c("#303600","#a5c500" ,"#d4c78c","#5ec6f2","003468"),
-#                     labels = c("Ótimo","Muito Bom","Bom","Regular","Insatisfatório"))+
   ylim(0, 0.15)+
   bbc_style()
 
 ```
 
+Finalmente, verificamos que a razão entre o atendimento por médicos e a população residente revela assimitrias regionais, sendo a região Sul mais bem atendida, enquanto a região Norte, com a maioria dos estados na condição oposta.
 
 
-Finalmente, verificamos que a razão entre o atendimento por médicos e a população residente revela assimitrias regionais, sendo a região  Sul
-mais bem atendida, enquanto a região Norte, com a maioria dos estados na condição oposta. 
+
+
 
