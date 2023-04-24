@@ -24,3 +24,26 @@ names(loaded_data)
 
 loaded_data %>% filter(co_municipio_ibge %in% c(292740)) 
 
+
+
+###############################################################################
+## Descompactar arquivos 
+library('data.table')
+
+# Lista de bancos compactados
+dbziplist <- list.files(path = "data/.",pattern = "ZIP")
+
+for (banco in dbziplist) {
+zipped_csv_names[banco] <- grep('tbEquipe202', unzip(paste('data/',banco,sep = ''), list=TRUE)$Name, 
+                         ignore.case=TRUE, value=TRUE)
+
+unzip(paste('data/',banco,sep = ''), files=zipped_csv_names)
+
+}
+
+comb_tbl <- rbindlist(lapply(zipped_csv_names,  
+                             function(x) cbind(fread(x, sep=';', header=TRUE,
+                                                     stringsAsFactors=FALSE),
+                                               file_nm=x)), fill=TRUE ) 
+
+
